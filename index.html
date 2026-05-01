@@ -111,55 +111,54 @@
 
   <script src="app.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      loadFeaturedTools();
-      loadAllTools('All');
-      setupCategoryFilter();
-      setupHeroSearch();
-    });
+    document.addEventListener('DOMContentLoaded', async () => {
+  // Wait for app.js to finish fetching the data
+  await loadTools(); 
+  
+  // Now that tools is not empty, run these
+  loadFeaturedTools();
+  loadAllTools('All');
+  setupCategoryFilter();
+  setupHeroSearch();
+});
+```[cite: 3]
 
-    function loadFeaturedTools() {
-      const grid = document.getElementById('featured-grid');
-      const featured = tools.filter(t => t.featured);
-      grid.innerHTML = featured.map((t, i) => createCard(t, i)).join('');
-    }
+### 2. Fix for `tools.html`
+Update the `<script>` at the bottom of your `tools.html` as well:
 
-    function loadAllTools(category) {
-      const grid = document.getElementById('all-grid');
-      const filtered = category === 'All' ? tools : tools.filter(t => t.category === category);
-      grid.innerHTML = filtered.length
-        ? filtered.map((t, i) => createCard(t, i)).join('')
-        : `<div class="no-results"><h3>No tools found</h3><p>Try a different category</p></div>`;
-    }
+```javascript
+document.addEventListener('DOMContentLoaded', async () => {
+  // Wait for the tools.json fetch to complete
+  await loadTools();
+  
+  // Initial render now that data exists
+  renderTools();
+  setupFilters();
+});
+```[cite: 6]
 
-    function setupCategoryFilter() {
-      document.querySelectorAll('.cat-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          loadAllTools(btn.dataset.cat);
-        });
-      });
-    }
+### Why this was happening
+1.  **Race Condition:** Your `loadTools()` function in `app.js` starts a "fetch" request[cite: 1].
+2.  **Premature Rendering:** While that request is still traveling over the internet, your HTML script runs `loadAllTools('All')`[cite: 3].
+3.  **Empty Array:** Since the data hasn't arrived yet, the script sees an empty list and displays "No tools found"[cite: 6].
+4.  **Manual Fix:** When you click a button later, the data has finally arrived, so the filter works perfectly[cite: 3].
 
-    function setupHeroSearch() {
-      document.getElementById('hero-search').addEventListener('input', e => {
-        const q = e.target.value.toLowerCase();
-        const grid = document.getElementById('all-grid');
-        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-        document.querySelector('.cat-btn[data-cat="All"]').classList.add('active');
-        if (!q) { loadAllTools('All'); return; }
-        const filtered = tools.filter(t =>
-          t.name.toLowerCase().includes(q) ||
-          t.tagline.toLowerCase().includes(q) ||
-          t.tags.some(tag => tag.includes(q)) ||
-          t.category.toLowerCase().includes(q)
-        );
-        grid.innerHTML = filtered.length
-          ? filtered.map((t, i) => createCard(t, i)).join('')
-          : `<div class="no-results"><h3>No results for "${e.target.value}"</h3><p>Try a different search term</p></div>`;
-      });
-    }
+### One Final check in `app.js`
+Ensure your `loadTools` function actually returns the data so the `await` command works correctly:
+
+```javascript
+async function loadTools() {
+  try {
+    const res = await fetch('tools.json');
+    tools = await res.json();
+    return tools; // Make sure this line exists!
+  } catch (e) {
+    console.error('Error:', e);
+  }
+}
+```[cite: 1]
+
+Apply these changes and your "All" category will show your 50+ tools the moment the page opens.
   </script>
 </body>
 </html>
