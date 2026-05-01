@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tool — AIDirectory</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .tool-hero { padding: 60px 40px 40px; max-width: 900px; margin: 0 auto; }
+    .back-link { font-size: 13px; color: var(--text-muted); margin-bottom: 32px; display: inline-flex; align-items: center; gap: 6px; transition: color 0.2s; }
+    .back-link:hover { color: var(--purple-light); }
+    .tool-header { display: flex; align-items: flex-start; gap: 24px; margin-bottom: 32px; }
+    .tool-logo-lg { width: 80px; height: 80px; border-radius: 20px; background: var(--bg3); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: 800; font-family: 'Syne',sans-serif; color: var(--purple-light); flex-shrink: 0; overflow: hidden; }
+    .tool-logo-lg img { width: 100%; height: 100%; object-fit: contain; padding: 10px; }
+    .tool-title { font-size: 36px; font-weight: 800; margin-bottom: 6px; }
+    .tool-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+    .detail-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 28px; margin-bottom: 20px; }
+    .detail-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; font-family: 'DM Sans', sans-serif; }
+    .tags-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { background: var(--bg3); border: 1px solid var(--border); color: var(--text-muted); font-size: 12px; padding: 4px 12px; border-radius: 100px; }
+    .visit-btn { display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; background: var(--purple); color: white; border-radius: 12px; font-weight: 600; font-size: 15px; transition: all 0.2s; margin-top: 8px; }
+    .visit-btn:hover { background: #7c3aed; transform: translateY(-2px); }
+    @media (max-width: 600px) { .tool-hero { padding: 40px 20px; } .tool-header { flex-direction: column; } .tool-title { font-size: 26px; } }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-logo"><div class="dot"></div>AIDirectory</div>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="tools.html" class="active">All Tools</a></li>
+      <li><a href="blog.html">Blog</a></li>
+      <li><a href="index.html#submit" class="nav-cta">Submit Tool</a></li>
+    </ul>
+  </nav>
+
+  <div class="tool-hero" id="tool-detail">
+    <div style="text-align:center; padding: 80px 0; color: var(--text-muted);">Loading...</div>
+  </div>
+
+  <footer>
+    <div class="footer-left">
+      <div class="logo">AIDirectory</div>
+      <p>© 2026 AIDirectory. All rights reserved.</p>
+    </div>
+    <ul class="footer-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="tools.html">Tools</a></li>
+      <li><a href="blog.html">Blog</a></li>
+    </ul>
+  </footer>
+
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        const params = new URLSearchParams(window.location.search);
+        const id = parseInt(params.get('id'));
+        const tool = tools.find(t => t.id === id);
+        if (!tool) {
+          document.getElementById('tool-detail').innerHTML = `<div style="text-align:center;padding:80px 0;"><h2>Tool not found</h2><a href="tools.html" style="color:var(--purple-light)">← Back to tools</a></div>`;
+          return;
+        }
+        document.title = `${tool.name} — AIDirectory`;
+        document.getElementById('tool-detail').innerHTML = `
+          <a href="tools.html" class="back-link">← Back to all tools</a>
+          <div class="tool-header">
+            <div class="tool-logo-lg">
+              ${tool.logo ? `<img src="${tool.logo}" alt="${tool.name}" onerror="this.parentElement.textContent='${tool.name[0]}'">` : tool.name[0]}
+            </div>
+            <div>
+              <h1 class="tool-title">${tool.name}</h1>
+              <div class="tool-meta">
+                <span class="pricing-badge ${tool.pricing}">${tool.pricing}</span>
+                <span class="tool-category">${tool.category}</span>
+                <span class="tool-rating"><span class="star">★</span> ${tool.rating} / 5</span>
+                ${tool.featured ? '<span class="featured-badge" style="position:static;">Featured</span>' : ''}
+              </div>
+              <p style="color:var(--text-muted); font-size:16px;">${tool.tagline}</p>
+            </div>
+          </div>
+
+          <div class="detail-card">
+            <h3>About</h3>
+            <p style="color:var(--text-muted); line-height:1.8; font-size:15px;">${tool.description}</p>
+          </div>
+
+          <div class="detail-card">
+            <h3>Tags</h3>
+            <div class="tags-wrap">
+              ${tool.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+            </div>
+          </div>
+
+          <div class="detail-card">
+            <h3>Pricing</h3>
+            <p style="color:var(--text-muted); font-size:14px; margin-bottom:4px;">This tool is available as <strong style="color:var(--text)">${tool.pricing}</strong>.</p>
+            <a href="${tool.url}" target="_blank" rel="noopener" class="visit-btn">
+              Visit ${tool.name} →
+            </a>
+          </div>
+
+          <div style="margin-top: 40px;">
+            <h3 style="font-size:20px; font-weight:700; margin-bottom:20px;">More Tools You Might Like</h3>
+            <div class="tools-grid" style="grid-template-columns:repeat(auto-fill,minmax(240px,1fr));">
+              ${tools.filter(t => t.category === tool.category && t.id !== tool.id).slice(0,3).map((t,i) => createCard(t,i)).join('')}
+            </div>
+          </div>
+        `;
+      }, 150);
+    });
+  </script>
+</body>
+</html>
