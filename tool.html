@@ -1,32 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tool — AIDirectory</title>
-  <link rel="stylesheet" href="style.css" />
-  <style>
-    .tool-hero { padding: 60px 40px 40px; max-width: 900px; margin: 0 auto; }
-    .back-link { font-size: 13px; color: var(--text-muted); margin-bottom: 32px; display: inline-flex; align-items: center; gap: 6px; transition: color 0.2s; }
-    .back-link:hover { color: var(--purple-light); }
-    .tool-header { display: flex; align-items: flex-start; gap: 24px; margin-bottom: 32px; }
-    .tool-logo-lg { width: 80px; height: 80px; border-radius: 20px; background: var(--bg3); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: 800; font-family: 'Syne',sans-serif; color: var(--purple-light); flex-shrink: 0; overflow: hidden; }
-    .tool-logo-lg img { width: 100%; height: 100%; object-fit: contain; padding: 10px; }
-    .tool-title { font-size: 36px; font-weight: 800; margin-bottom: 6px; }
-    .tool-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
-    .detail-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 28px; margin-bottom: 20px; }
-    .detail-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; font-family: 'DM Sans', sans-serif; }
-    .tags-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
-    .tag { background: var(--bg3); border: 1px solid var(--border); color: var(--text-muted); font-size: 12px; padding: 4px 12px; border-radius: 100px; }
-    .visit-btn { display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; background: var(--purple); color: white; border-radius: 12px; font-weight: 600; font-size: 15px; transition: all 0.2s; margin-top: 8px; }
-    .visit-btn:hover { background: #7c3aed; transform: translateY(-2px); }
-    @media (max-width: 600px) { .tool-hero { padding: 40px 20px; } .tool-header { flex-direction: column; } .tool-title { font-size: 26px; } }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All AI Tools — AIDirectory</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+  <!-- NAV -->
   <nav>
-    <div class="nav-logo"><div class="dot"></div>AIDirectory</div>
+    <div class="nav-logo">
+      <div class="dot"></div>
+      AIDirectory
+    </div>
     <ul class="nav-links">
       <li><a href="index.html">Home</a></li>
       <li><a href="tools.html" class="active">All Tools</a></li>
@@ -35,10 +22,36 @@
     </ul>
   </nav>
 
-  <div class="tool-hero" id="tool-detail">
-    <div style="text-align:center; padding: 80px 0; color: var(--text-muted);">Loading...</div>
-  </div>
+  <!-- PAGE HEADER -->
+  <header class="page-header">
+    <div class="hero-glow"></div>
+    <h1>Explore All AI Tools</h1>
+    <p>Browse our complete database of AI-powered solutions.</p>
+  </header>
 
+  <!-- MAIN CONTENT -->
+  <main class="container" style="max-width: 1200px; margin: 40px auto; padding: 0 20px;">
+    
+    <!-- CATEGORY FILTERS -->
+    <div class="categories" id="tool-filters" style="margin-bottom: 40px;">
+      <button class="filter-btn active" data-cat="All">All Tools</button>
+      <button class="filter-btn" data-cat="Chatbot">Chatbots</button>
+      <button class="filter-btn" data-cat="Image Generation">Image</button>
+      <button class="filter-btn" data-cat="Writing">Writing</button>
+      <button class="filter-btn" data-cat="Coding">Coding</button>
+      <button class="filter-btn" data-cat="Audio">Audio</button>
+      <button class="filter-btn" data-cat="Video">Video</button>
+      <button class="filter-btn" data-cat="Productivity">Productivity</button>
+      <button class="filter-btn" data-cat="Search">Search</button>
+    </div>
+
+    <!-- GRID CONTAINER -->
+    <div class="tools-grid" id="tools-grid">
+      <!-- Tools will be injected here by JavaScript -->
+    </div>
+  </main>
+
+  <!-- FOOTER -->
   <footer>
     <div class="footer-left">
       <div class="logo">AIDirectory</div>
@@ -53,63 +66,64 @@
 
   <script src="app.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      setTimeout(() => {
-        const params = new URLSearchParams(window.location.search);
-        const id = parseInt(params.get('id'));
-        const tool = tools.find(t => t.id === id);
-        if (!tool) {
-          document.getElementById('tool-detail').innerHTML = `<div style="text-align:center;padding:80px 0;"><h2>Tool not found</h2><a href="tools.html" style="color:var(--purple-light)">← Back to tools</a></div>`;
-          return;
-        }
-        document.title = `${tool.name} — AIDirectory`;
-        document.getElementById('tool-detail').innerHTML = `
-          <a href="tools.html" class="back-link">← Back to all tools</a>
-          <div class="tool-header">
-            <div class="tool-logo-lg">
-              ${tool.logo ? `<img src="${tool.logo}" alt="${tool.name}" onerror="this.parentElement.textContent='${tool.name[0]}'">` : tool.name[0]}
-            </div>
-            <div>
-              <h1 class="tool-title">${tool.name}</h1>
-              <div class="tool-meta">
-                <span class="pricing-badge ${tool.pricing}">${tool.pricing}</span>
-                <span class="tool-category">${tool.category}</span>
-                <span class="tool-rating"><span class="star">★</span> ${tool.rating} / 5</span>
-                ${tool.featured ? '<span class="featured-badge" style="position:static;">Featured</span>' : ''}
-              </div>
-              <p style="color:var(--text-muted); font-size:16px;">${tool.tagline}</p>
-            </div>
-          </div>
-
-          <div class="detail-card">
-            <h3>About</h3>
-            <p style="color:var(--text-muted); line-height:1.8; font-size:15px;">${tool.description}</p>
-          </div>
-
-          <div class="detail-card">
-            <h3>Tags</h3>
-            <div class="tags-wrap">
-              ${tool.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
-            </div>
-          </div>
-
-          <div class="detail-card">
-            <h3>Pricing</h3>
-            <p style="color:var(--text-muted); font-size:14px; margin-bottom:4px;">This tool is available as <strong style="color:var(--text)">${tool.pricing}</strong>.</p>
-            <a href="${tool.url}" target="_blank" rel="noopener" class="visit-btn">
-              Visit ${tool.name} →
-            </a>
-          </div>
-
-          <div style="margin-top: 40px;">
-            <h3 style="font-size:20px; font-weight:700; margin-bottom:20px;">More Tools You Might Like</h3>
-            <div class="tools-grid" style="grid-template-columns:repeat(auto-fill,minmax(240px,1fr));">
-              ${tools.filter(t => t.category === tool.category && t.id !== tool.id).slice(0,3).map((t,i) => createCard(t,i)).join('')}
-            </div>
-          </div>
-        `;
-      }, 150);
+    /**
+     * Initialization: Wait for data before rendering
+     */
+    document.addEventListener('DOMContentLoaded', async () => {
+      // 1. Wait for the tools.json fetch in app.js to finish
+      await loadTools(); 
+      
+      // 2. Initial render of all tools once data is present[cite: 3, 6]
+      renderTools('All');
+      
+      // 3. Set up button click listeners
+      setupFilters();
     });
+
+    /**
+     * Renders cards to the tools-grid div[cite: 1, 6]
+     */
+    function renderTools(filter = 'All') {
+      const grid = document.getElementById('tools-grid');
+      
+      // Filter tools based on category[cite: 3, 7]
+      const filtered = filter === 'All' 
+        ? tools 
+        : tools.filter(t => t.category === filter);
+      
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="no-results" style="grid-column: 1/-1; text-align: center; padding: 60px;">
+            <h3>No tools found in "${filter}"</h3>
+            <p>We are constantly adding new tools. Check back soon!</p>
+          </div>`;
+        return;
+      }
+
+      // Use the createCard function from app.js
+      grid.innerHTML = filtered.map((t, i) => createCard(t, i)).join('');
+    }
+
+    /**
+     * Handles filter button interactions[cite: 3]
+     */
+    function setupFilters() {
+      const buttons = document.querySelectorAll('.filter-btn');
+      
+      buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          // Update active UI state
+          buttons.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          
+          // Re-render grid with new filter[cite: 3]
+          renderTools(btn.dataset.cat);
+          
+          // Smooth scroll to top of grid on mobile
+          window.scrollTo({ top: 200, behavior: 'smooth' });
+        });
+      });
+    }
   </script>
 </body>
 </html>
