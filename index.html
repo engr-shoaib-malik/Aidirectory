@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AIDirectory — Discover the Best AI Tools</title>
+  <meta name="description" content="Explore the largest directory of AI tools. Find the perfect AI tool for writing, coding, design, video, and more." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">
+      <div class="dot"></div>
+      AIDirectory
+    </div>
+    <ul class="nav-links">
+      <li><a href="index.html" class="active">Home</a></li>
+      <li><a href="tools.html">All Tools</a></li>
+      <li><a href="blog.html">Blog</a></li>
+      <li><a href="#submit" class="nav-cta">Submit Tool</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-tag">
+      <div class="pulse"></div>
+      100+ AI Tools Listed
+    </div>
+    <h1>Discover the Best<br><span>AI Tools</span> in 2026</h1>
+    <p>Your ultimate directory for finding, comparing, and choosing the right AI tools for any task.</p>
+    <div class="search-wrap">
+      <input type="text" id="hero-search" placeholder="Search AI tools... (e.g. image generator, coding)" />
+      <div class="search-icon">⌕</div>
+    </div>
+    <div class="stats-row">
+      <div class="stat">
+        <div class="stat-num" id="total-count">12</div>
+        <div class="stat-label">AI Tools</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">8</div>
+        <div class="stat-label">Categories</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">Free</div>
+        <div class="stat-label">To Browse</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEATURED TOOLS -->
+  <section>
+    <div class="section-header" style="max-width:1200px;margin:0 auto 32px;">
+      <h2 class="section-title">Featured Tools</h2>
+      <a href="tools.html" class="section-link">View all →</a>
+    </div>
+
+    <div class="tools-grid" id="featured-grid"></div>
+  </section>
+
+  <!-- BROWSE BY CATEGORY -->
+  <section style="background: var(--bg2); padding: 60px 40px;">
+    <div style="max-width:1200px; margin: 0 auto;">
+      <div class="section-header">
+        <h2 class="section-title">Browse by Category</h2>
+      </div>
+      <div class="categories" id="category-filter">
+        <button class="cat-btn active" data-cat="All">All</button>
+        <button class="cat-btn" data-cat="Chatbot">Chatbot</button>
+        <button class="cat-btn" data-cat="Image Generation">Image</button>
+        <button class="cat-btn" data-cat="Writing">Writing</button>
+        <button class="cat-btn" data-cat="Coding">Coding</button>
+        <button class="cat-btn" data-cat="Audio">Audio</button>
+        <button class="cat-btn" data-cat="Video">Video</button>
+        <button class="cat-btn" data-cat="Productivity">Productivity</button>
+        <button class="cat-btn" data-cat="Search">Search</button>
+      </div>
+      <div class="tools-grid" id="all-grid"></div>
+    </div>
+  </section>
+
+  <!-- SUBMIT BANNER -->
+  <section id="submit">
+    <div class="submit-banner">
+      <h2>Got an AI Tool?</h2>
+      <p>Submit your AI tool to our directory and reach thousands of users looking for tools like yours.</p>
+      <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+        <a href="mailto:submit@aidirectory.com" class="btn btn-primary">Submit Your Tool →</a>
+        <a href="tools.html" class="btn btn-outline">Browse All Tools</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-left">
+      <div class="logo">AIDirectory</div>
+      <p>© 2026 AIDirectory. All rights reserved.</p>
+    </div>
+    <ul class="footer-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="tools.html">Tools</a></li>
+      <li><a href="blog.html">Blog</a></li>
+      <li><a href="#submit">Submit</a></li>
+    </ul>
+  </footer>
+
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      loadFeaturedTools();
+      loadAllTools('All');
+      setupCategoryFilter();
+      setupHeroSearch();
+    });
+
+    function loadFeaturedTools() {
+      const grid = document.getElementById('featured-grid');
+      const featured = tools.filter(t => t.featured);
+      grid.innerHTML = featured.map((t, i) => createCard(t, i)).join('');
+    }
+
+    function loadAllTools(category) {
+      const grid = document.getElementById('all-grid');
+      const filtered = category === 'All' ? tools : tools.filter(t => t.category === category);
+      grid.innerHTML = filtered.length
+        ? filtered.map((t, i) => createCard(t, i)).join('')
+        : `<div class="no-results"><h3>No tools found</h3><p>Try a different category</p></div>`;
+    }
+
+    function setupCategoryFilter() {
+      document.querySelectorAll('.cat-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          loadAllTools(btn.dataset.cat);
+        });
+      });
+    }
+
+    function setupHeroSearch() {
+      document.getElementById('hero-search').addEventListener('input', e => {
+        const q = e.target.value.toLowerCase();
+        const grid = document.getElementById('all-grid');
+        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+        document.querySelector('.cat-btn[data-cat="All"]').classList.add('active');
+        if (!q) { loadAllTools('All'); return; }
+        const filtered = tools.filter(t =>
+          t.name.toLowerCase().includes(q) ||
+          t.tagline.toLowerCase().includes(q) ||
+          t.tags.some(tag => tag.includes(q)) ||
+          t.category.toLowerCase().includes(q)
+        );
+        grid.innerHTML = filtered.length
+          ? filtered.map((t, i) => createCard(t, i)).join('')
+          : `<div class="no-results"><h3>No results for "${e.target.value}"</h3><p>Try a different search term</p></div>`;
+      });
+    }
+  </script>
+</body>
+</html>

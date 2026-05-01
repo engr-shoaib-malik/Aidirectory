@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>All AI Tools — AIDirectory</title>
+  <meta name="description" content="Browse all AI tools in our directory. Filter by category, pricing, and more." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <nav>
+    <div class="nav-logo"><div class="dot"></div>AIDirectory</div>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="tools.html" class="active">All Tools</a></li>
+      <li><a href="blog.html">Blog</a></li>
+      <li><a href="index.html#submit" class="nav-cta">Submit Tool</a></li>
+    </ul>
+  </nav>
+
+  <section style="padding-top: 48px;">
+    <div style="max-width:1200px; margin: 0 auto;">
+
+      <div style="margin-bottom: 40px;">
+        <h1 style="font-size: 36px; font-weight: 800; margin-bottom: 8px;">All AI Tools</h1>
+        <p style="color: var(--text-muted);">Browse our full directory of AI tools. New tools added weekly.</p>
+      </div>
+
+      <!-- SEARCH + FILTER BAR -->
+      <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:32px; align-items:center;">
+        <div class="search-wrap" style="flex:1; min-width:240px; max-width:400px;">
+          <input type="text" id="search-input" placeholder="Search tools..." />
+          <div class="search-icon">⌕</div>
+        </div>
+        <select id="pricing-filter" style="padding:10px 16px; background:var(--bg3); border:1px solid var(--border); border-radius:10px; color:var(--text); font-family:'DM Sans',sans-serif; font-size:14px; outline:none; cursor:pointer;">
+          <option value="All">All Pricing</option>
+          <option value="Free">Free</option>
+          <option value="Freemium">Freemium</option>
+          <option value="Paid">Paid</option>
+        </select>
+        <div id="tool-count" style="font-size:13px; color:var(--text-muted); white-space:nowrap;"></div>
+      </div>
+
+      <!-- CATEGORY TABS -->
+      <div class="categories" style="justify-content:flex-start; margin-bottom:32px;" id="cat-tabs">
+        <button class="cat-btn active" data-cat="All">All</button>
+        <button class="cat-btn" data-cat="Chatbot">Chatbot</button>
+        <button class="cat-btn" data-cat="Image Generation">Image</button>
+        <button class="cat-btn" data-cat="Writing">Writing</button>
+        <button class="cat-btn" data-cat="Coding">Coding</button>
+        <button class="cat-btn" data-cat="Audio">Audio</button>
+        <button class="cat-btn" data-cat="Video">Video</button>
+        <button class="cat-btn" data-cat="Productivity">Productivity</button>
+        <button class="cat-btn" data-cat="Search">Search</button>
+      </div>
+
+      <div class="tools-grid" id="tools-grid"></div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-left">
+      <div class="logo">AIDirectory</div>
+      <p>© 2026 AIDirectory. All rights reserved.</p>
+    </div>
+    <ul class="footer-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="tools.html">Tools</a></li>
+      <li><a href="blog.html">Blog</a></li>
+    </ul>
+  </footer>
+
+  <script src="app.js"></script>
+  <script>
+    let currentCat = 'All';
+    let currentPricing = 'All';
+    let searchQuery = '';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(renderTools, 100);
+      setupFilters();
+    });
+
+    function renderTools() {
+      const grid = document.getElementById('tools-grid');
+      let filtered = tools.filter(t => {
+        const matchCat = currentCat === 'All' || t.category === currentCat;
+        const matchPricing = currentPricing === 'All' || t.pricing === currentPricing;
+        const matchSearch = !searchQuery ||
+          t.name.toLowerCase().includes(searchQuery) ||
+          t.tagline.toLowerCase().includes(searchQuery) ||
+          t.tags.some(tag => tag.includes(searchQuery)) ||
+          t.category.toLowerCase().includes(searchQuery);
+        return matchCat && matchPricing && matchSearch;
+      });
+
+      document.getElementById('tool-count').textContent = `${filtered.length} tool${filtered.length !== 1 ? 's' : ''}`;
+
+      grid.innerHTML = filtered.length
+        ? filtered.map((t, i) => createCard(t, i)).join('')
+        : `<div class="no-results"><h3>No tools found</h3><p>Try adjusting your filters or search term</p></div>`;
+    }
+
+    function setupFilters() {
+      document.getElementById('search-input').addEventListener('input', e => {
+        searchQuery = e.target.value.toLowerCase();
+        renderTools();
+      });
+
+      document.getElementById('pricing-filter').addEventListener('change', e => {
+        currentPricing = e.target.value;
+        renderTools();
+      });
+
+      document.querySelectorAll('#cat-tabs .cat-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('#cat-tabs .cat-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentCat = btn.dataset.cat;
+          renderTools();
+        });
+      });
+    }
+  </script>
+</body>
+</html>
