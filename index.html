@@ -28,7 +28,7 @@
     <div class="hero-glow"></div>
     <div class="hero-tag">
       <div class="pulse"></div>
-      100+ AI Tools Listed
+      50+ AI Tools Listed
     </div>
     <h1>Discover the Best<br><span>AI Tools</span> in 2026</h1>
     <p>Your ultimate directory for finding, comparing, and choosing the right AI tools for any task.</p>
@@ -38,7 +38,7 @@
     </div>
     <div class="stats-row">
       <div class="stat">
-        <div class="stat-num" id="total-count">12</div>
+        <div class="stat-num" id="total-count">0</div>
         <div class="stat-label">AI Tools</div>
       </div>
       <div class="stat">
@@ -111,7 +111,12 @@
 
   <script src="app.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    // Using async/await to prevent the "No tools found" race condition
+    document.addEventListener('DOMContentLoaded', async () => {
+      // 1. Wait for the data to actually load from tools.json
+      await loadTools(); 
+      
+      // 2. Now that 'tools' array is ready, render the page[cite: 3]
       loadFeaturedTools();
       loadAllTools('All');
       setupCategoryFilter();
@@ -120,6 +125,7 @@
 
     function loadFeaturedTools() {
       const grid = document.getElementById('featured-grid');
+      // Filters for tools marked as featured in tools.json[cite: 3, 7]
       const featured = tools.filter(t => t.featured);
       grid.innerHTML = featured.map((t, i) => createCard(t, i)).join('');
     }
@@ -146,15 +152,23 @@
       document.getElementById('hero-search').addEventListener('input', e => {
         const q = e.target.value.toLowerCase();
         const grid = document.getElementById('all-grid');
+        
+        // Reset category buttons when searching[cite: 3]
         document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
         document.querySelector('.cat-btn[data-cat="All"]').classList.add('active');
-        if (!q) { loadAllTools('All'); return; }
+        
+        if (!q) { 
+          loadAllTools('All'); 
+          return; 
+        }
+        
         const filtered = tools.filter(t =>
           t.name.toLowerCase().includes(q) ||
           t.tagline.toLowerCase().includes(q) ||
           t.tags.some(tag => tag.includes(q)) ||
           t.category.toLowerCase().includes(q)
         );
+        
         grid.innerHTML = filtered.length
           ? filtered.map((t, i) => createCard(t, i)).join('')
           : `<div class="no-results"><h3>No results for "${e.target.value}"</h3><p>Try a different search term</p></div>`;
